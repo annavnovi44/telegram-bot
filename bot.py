@@ -1,11 +1,11 @@
 import logging
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import Application, CommandHandler, CallbackContext, MessageHandler, filters
+from telegram.ext import Application, CommandHandler, MessageHandler, CallbackContext, filters
 
 # Токен бота
 TOKEN = "7747654844:AAFksU8Tlq03TpzJtUzvhI0ytPxB5kdsBrY"
 
-# ID Телеграм-канала (без кавычек и без пробелов)
+# ID Телеграм-канала (важно, чтобы бот был админом!)
 CHANNEL_ID = -1002401430345  
 
 # Включаем логирование
@@ -15,8 +15,8 @@ print("Бот запущен!")
 # Функция обработки команды /start
 async def start(update: Update, context: CallbackContext):
     keyboard = [
-        [InlineKeyboardButton("🛒 Бот для продаж", url="https://t.me/ExpressStoreBot")],
-        [InlineKeyboardButton("🔥 Бот для OnlyFans", url="https://t.me/contentSellerProBot")],
+        [InlineKeyboardButton("🛒 Бот для продаж", url="https://t.me/ExpressStoreBot?start")],
+        [InlineKeyboardButton("🔥 Бот для OnlyFans", url="https://t.me/contentSellerProBot?start")],
         [InlineKeyboardButton("📩 Связаться с нами", url="https://t.me/ANNAYAV4")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -33,10 +33,16 @@ async def start(update: Update, context: CallbackContext):
 # Функция пересылки сообщений в канал
 async def forward_to_channel(update: Update, context: CallbackContext):
     if update.message.text:
+        username = update.message.from_user.username
+        message_text = update.message.text
+
+        # Отправка сообщения в канал
         await context.bot.send_message(
             chat_id=CHANNEL_ID,
-            text=f"📢 Новое сообщение от @{update.message.from_user.username}:\n\n{update.message.text}"
+            text=f"📢 Новое сообщение от @{username}:\n\n{message_text}"
         )
+
+        # Подтверждение пользователю
         await update.message.reply_text("✅ Ваше сообщение отправлено в наш канал!")
 
 # Основная функция запуска бота
